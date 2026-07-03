@@ -40,7 +40,7 @@ products.forEach((product) => {
 
           <div class="product-spacer"></div>
 
-          <div class="added-to-cart">
+          <div class="added-to-cart js-added-to-cart-${product.id}">
             <img src="images/icons/checkmark.png">
             Added
           </div>
@@ -55,11 +55,21 @@ products.forEach((product) => {
 document.querySelector('.js-products-grid').innerHTML = productsHTML;
 
 document.querySelectorAll('.js-add-to-cart').forEach((button) => {
+  let timeoutId;
   button.addEventListener('click', (e) => {
     const productId = button.dataset.productId;
 
     let quantityAdding = Number(document.querySelector(`.js-quantity-selector-${productId}`).value);
 
+    let addedCheckmark = document.querySelector(`.js-added-to-cart-${productId}`);
+
+    addedCheckmark.classList.add('visible');
+
+    clearTimeout(timeoutId);
+
+    timeoutId = setTimeout(() => {
+      addedCheckmark.classList.remove('visible');
+    }, 2000)
 
     let matchingItem;
 
