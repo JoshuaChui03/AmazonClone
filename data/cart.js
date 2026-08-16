@@ -1,4 +1,5 @@
 import {validDeliveryOption} from "./deliveryOptions.js";
+import {Appliance, Clothing, Product, products} from "./products.js";
 
 export let cart;
 
@@ -90,4 +91,10 @@ export function updateDeliverOption(productId, deliveryOptionId) {
       matchingItem.deliveryOptionId = deliveryOptionId;
       saveToStorage();
     }});
+}
+
+export async function loadCartFetch() {
+    const response = await fetch('https://supersimplebackend.dev/cart');
+    const data = await response.text();
+    console.log(data);
 }

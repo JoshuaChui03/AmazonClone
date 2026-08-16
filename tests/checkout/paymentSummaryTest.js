@@ -1,7 +1,12 @@
 import {renderPaymentSummary} from "../../scripts/checkout/paymentSummary.js";
 import {loadFromStorage} from "../../data/cart.js";
+import {loadProductsFetch} from "../../data/products.js";
 
 describe('test suite: renderPaymentSummary', () => {
+  beforeAll(async () => {
+    await loadProductsFetch();
+  });
+
   beforeEach(() => {
     document.querySelector('.js-test-container').innerHTML = `
       <div class="js-payment-summary"></div>

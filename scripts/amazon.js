@@ -1,11 +1,26 @@
-import {cart, addToCart, calculateCartQuantity} from '../data/cart.js'
-import {products} from '../data/products.js'
-import {formatCurrency} from "./utils/money.js";
+import {addToCart, calculateCartQuantity, loadCartFetch} from '../data/cart.js'
+import {products, loadProductsFetch} from '../data/products.js'
 
-let productsHTML = ''
+loadPage();
 
-products.forEach((product) => {
-  productsHTML += `<div class="product-container">
+async function loadPage() {
+  try {
+    await Promise.all([
+      loadProductsFetch(),
+      loadCartFetch()
+    ]);
+  } catch (error) {
+    console.error("Error loading page:", error);
+  }
+
+  renderProductsGrid();
+}
+
+function renderProductsGrid() {
+  let productsHTML = ''
+
+  products.forEach((product) => {
+    productsHTML += `<div class="product-container">
           <div class="product-image-container">
             <img class="product-image"
               src="${product.image}">
@@ -55,36 +70,37 @@ products.forEach((product) => {
             Add to Cart
           </button>
         </div>`;
-})
-
-
-document.querySelector('.js-products-grid').innerHTML = productsHTML;
-
-function updateCartQuantity() {
-
-  document.querySelector(".js-cart-quantity").innerHTML = calculateCartQuantity();
-}
-
-function addedToCartCheckmark(timeoutId, productId) {
-  const addedCheckmark = document.querySelector(`.js-added-to-cart-${productId}`);
-  addedCheckmark.classList.add('visible');
-
-  clearTimeout(timeoutId);
-
-  return setTimeout(() => {
-    addedCheckmark.classList.remove('visible');
-  }, 2000)
-}
-
-document.querySelectorAll('.js-add-to-cart').forEach((button) => {
-  let timeoutId;
-  button.addEventListener('click', (e) => {
-    const productId = button.dataset.productId;
-
-    addToCart(productId);
-    timeoutId = addedToCartCheckmark(timeoutId, productId);
-    updateCartQuantity();
   })
-})
 
-updateCartQuantity();
+
+  document.querySelector('.js-products-grid').innerHTML = productsHTML;
+
+  function updateCartQuantity() {
+
+    document.querySelector(".js-cart-quantity").innerHTML = calculateCartQuantity();
+  }
+
+  function addedToCartCheckmark(timeoutId, productId) {
+    const addedCheckmark = document.querySelector(`.js-added-to-cart-${productId}`);
+    addedCheckmark.classList.add('visible');
+
+    clearTimeout(timeoutId);
+
+    return setTimeout(() => {
+      addedCheckmark.classList.remove('visible');
+    }, 2000)
+  }
+
+  document.querySelectorAll('.js-add-to-cart').forEach((button) => {
+    let timeoutId;
+    button.addEventListener('click', (e) => {
+      const productId = button.dataset.productId;
+
+      addToCart(productId);
+      timeoutId = addedToCartCheckmark(timeoutId, productId);
+      updateCartQuantity();
+    })
+  })
+
+  updateCartQuantity();
+}
