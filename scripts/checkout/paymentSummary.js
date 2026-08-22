@@ -1,5 +1,5 @@
-import {cart, calculateCartQuantity} from "../../data/cart.js";
-import {getProducts} from "../../data/products.js";
+import {cart, calculateCartQuantity, resetCart} from "../../data/cart.js";
+import {getProduct} from "../../data/products.js";
 import {getDeliveryOption} from "../../data/deliveryOptions.js";
 import {formatCurrency} from "../utils/money.js"
 import {addOrder} from "../../data/orders.js";
@@ -9,7 +9,7 @@ export function renderPaymentSummary() {
   let shippingPriceCents = 0;
 
   cart.forEach((cartItem) => {
-    const product = getProducts(cartItem.productId);
+    const product = getProduct(cartItem.productId);
     productPriceCents += product.priceCents * cartItem.quantity
 
     const deliveryOption = getDeliveryOption(cartItem.deliveryOptionId)
@@ -70,11 +70,14 @@ export function renderPaymentSummary() {
       });
 
       const order = await response.json()
+      console.log(cart);
+      console.log('order', order);
       addOrder(order);
     } catch (error) {
       console.error(error);
     }
 
-    window.location.href = 'orders.html';
+    resetCart();
+    //window.location.href = 'orders.html';
   });
 }

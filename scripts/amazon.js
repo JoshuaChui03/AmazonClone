@@ -1,5 +1,6 @@
-import {addToCart, calculateCartQuantity, loadCartFetch} from '../data/cart.js'
+import {addToCart, loadCartFetch} from '../data/cart.js'
 import {products, loadProductsFetch} from '../data/products.js'
+import {renderAmazonHeader, updateCartQuantity} from "./amazonHeader.js";
 
 loadPage();
 
@@ -13,13 +14,37 @@ async function loadPage() {
     console.error("Error loading page:", error);
   }
 
+  renderAmazonHeader();
   renderProductsGrid();
 }
 
 function renderProductsGrid() {
+
+  const url = new URL(window.location.href);
+  const searchQuery = url.searchParams.get("search");
+
+  let filteredProducts = products;
+
+  if (searchQuery) {
+    filteredProducts = products.filter((product) => {
+      let matchingKeyword = false;
+
+      product.keywords.forEach((keyword) => {
+        if (keyword.toLowerCase().includes(searchQuery.toLowerCase())) {
+          matchingKeyword = true;
+        }
+      });
+
+      return matchingKeyword ||
+          product.name.toLowerCase().includes(searchQuery.toLowerCase());
+    });
+  }
+
   let productsHTML = ''
 
-  products.forEach((product) => {
+
+
+  filteredProducts.forEach((product) => {
     productsHTML += `<div class="product-container">
           <div class="product-image-container">
             <img class="product-image"
@@ -74,11 +99,6 @@ function renderProductsGrid() {
 
 
   document.querySelector('.js-products-grid').innerHTML = productsHTML;
-
-  function updateCartQuantity() {
-
-    document.querySelector(".js-cart-quantity").innerHTML = calculateCartQuantity();
-  }
 
   function addedToCartCheckmark(timeoutId, productId) {
     const addedCheckmark = document.querySelector(`.js-added-to-cart-${productId}`);

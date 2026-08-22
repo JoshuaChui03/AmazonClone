@@ -1,5 +1,4 @@
 import {validDeliveryOption} from "./deliveryOptions.js";
-import {Appliance, Clothing, Product, products} from "./products.js";
 
 export let cart;
 
@@ -27,7 +26,7 @@ function saveToStorage(){
 }
 
 export function addToCart(productId) {
-  const quantityAdding = Number(document.querySelector(`.js-quantity-selector-${productId}`).value);
+  const quantityAdding = Number(document.querySelector(`.js-quantity-selector-${productId}`)?.value) || 1;
   let matchingItem;
 
   cart.forEach((cartItem) => {
@@ -97,4 +96,9 @@ export async function loadCartFetch() {
     const response = await fetch('https://supersimplebackend.dev/cart');
     const data = await response.text();
     console.log(data);
+}
+
+export function resetCart() {
+  cart = [];
+  saveToStorage();
 }

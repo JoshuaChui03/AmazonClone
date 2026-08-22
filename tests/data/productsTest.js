@@ -1,8 +1,12 @@
-import {getProducts, Product, Clothing, Appliance} from "../../data/products.js";
+import {getProduct, Product, Clothing, Appliance, loadProductsFetch} from "../../data/products.js";
+
+beforeAll(async () => {
+  await loadProductsFetch();
+});
 
 describe('test suite: getProducts', () => {
   it('existing id in products', () => {
-    expect(getProducts('e43638ce-6aa0-4b85-b27f-e1d07eb678c6')).toEqual(new Product({
+    expect(getProduct('e43638ce-6aa0-4b85-b27f-e1d07eb678c6')).toEqual(new Product({
       id: "e43638ce-6aa0-4b85-b27f-e1d07eb678c6",
       image: "images/products/athletic-cotton-socks-6-pairs.jpg",
       name: "Black and Gray Athletic Cotton Socks - 6 Pairs",
@@ -20,7 +24,7 @@ describe('test suite: getProducts', () => {
   });
 
   it('non existing id in products', () => {
-    expect(getProducts('1')).toEqual(undefined);
+    expect(getProduct('1')).toEqual(undefined);
   });
 });
 
