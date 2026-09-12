@@ -3,6 +3,7 @@ import {getProduct} from "../../data/products.js";
 import {getDeliveryOption} from "../../data/deliveryOptions.js";
 import {formatCurrency} from "../utils/money.js"
 import {addOrder} from "../../data/orders.js";
+import {createOrder} from "../services/api.js";
 
 export function renderPaymentSummary() {
   let productPriceCents = 0;
@@ -59,17 +60,8 @@ export function renderPaymentSummary() {
 
   document.querySelector('.js-place-order-button').addEventListener('click', async () => {
     try {
-      const response = await fetch('https://supersimplebackend.dev/orders', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          cart: cart,
-        })
-      });
+      const order = await createOrder(cart);
 
-      const order = await response.json()
       console.log(cart);
       console.log('order', order);
       addOrder(order);

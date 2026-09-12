@@ -115,8 +115,9 @@ function renderProductsGrid() {
     let timeoutId;
     button.addEventListener('click', (e) => {
       const productId = button.dataset.productId;
+      const quantity = Number(document.querySelector(`.js-quantity-selector-${productId}`).value);
 
-      addToCart(productId);
+      addToCart(productId, quantity);
       timeoutId = addedToCartCheckmark(timeoutId, productId);
       updateCartQuantity();
     })
