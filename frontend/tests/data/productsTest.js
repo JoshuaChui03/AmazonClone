@@ -6,8 +6,8 @@ beforeAll(async () => {
 
 describe('test suite: getProducts', () => {
   it('existing id in products', () => {
-    expect(getProduct('e43638ce-6aa0-4b85-b27f-e1d07eb678c6')).toEqual(new Product({
-      id: "e43638ce-6aa0-4b85-b27f-e1d07eb678c6",
+    expect(getProduct('6aa7b605df8996a26403ab0a')).toEqual(new Product({
+      id: "6aa7b605df8996a26403ab0a",
       image: "images/products/athletic-cotton-socks-6-pairs.jpg",
       name: "Black and Gray Athletic Cotton Socks - 6 Pairs",
       rating: {
@@ -33,7 +33,7 @@ describe('test suite: Product', () => {
 
   beforeEach(() => {
     product = new Product({
-      id: "e43638ce-6aa0-4b85-b27f-e1d07eb678c6",
+      id: "6aa7b605df8996a26403ab0a",
       image: "images/products/athletic-cotton-socks-6-pairs.jpg",
       name: "Black and Gray Athletic Cotton Socks - 6 Pairs",
       rating: {
@@ -50,7 +50,7 @@ describe('test suite: Product', () => {
   });
 
   it('has the correct properties', () => {
-    expect(product.id).toEqual('e43638ce-6aa0-4b85-b27f-e1d07eb678c6');
+    expect(product.id).toEqual('6aa7b605df8996a26403ab0a');
     expect(product.image).toEqual('images/products/athletic-cotton-socks-6-pairs.jpg');
     expect(product.name).toEqual('Black and Gray Athletic Cotton Socks - 6 Pairs');
     expect(product.rating).toEqual({
@@ -78,7 +78,7 @@ describe('test suite: Clothing', () => {
 
   beforeEach(() => {
     clothing = new Clothing({
-      id: "83d4ca15-0f35-48f5-b7a3-1ea210004f2e",
+      id: "6aa7b605df8996a26403ab0c",
       image: "images/products/adults-plain-cotton-tshirt-2-pack-teal.jpg",
       name: "Adults Plain Cotton T-Shirt - 2 Pack",
       rating: {
@@ -97,7 +97,7 @@ describe('test suite: Clothing', () => {
   });
 
   it('has the correct properties', () => {
-    expect(clothing.id).toEqual('83d4ca15-0f35-48f5-b7a3-1ea210004f2e');
+    expect(clothing.id).toEqual('6aa7b605df8996a26403ab0c');
     expect(clothing.image).toEqual('images/products/adults-plain-cotton-tshirt-2-pack-teal.jpg');
 
     expect(clothing.sizeChartLink).toEqual('images/clothing-size-chart.png');
@@ -125,7 +125,7 @@ describe('test suite: Appliance', () => {
 
   beforeEach(() => {
     appliance = new Appliance({
-      id: "54e0eccd-8f36-462b-b68a-8182611d9add",
+      id: "6aa7b605df8996a26403ab0d",
       image: "images/products/black-2-slot-toaster.jpg",
       name: "2 Slot Toaster - Black",
       rating: {
@@ -145,8 +145,8 @@ describe('test suite: Appliance', () => {
   });
 
   it('has the correct properties', () => {
-    expect(appliance.id).toEqual('54e0eccd-8f36-462b-b68a-8182611d9add'),
-        expect(appliance.image).toEqual('images/products/black-2-slot-toaster.jpg');
+    expect(appliance.id).toEqual('6aa7b605df8996a26403ab0d');
+    expect(appliance.image).toEqual('images/products/black-2-slot-toaster.jpg');
 
     expect(appliance.instructionsLink).toEqual('images/appliance-instructions.png');
     expect(appliance.warrantyLink).toEqual('images/appliance-warranty.png');

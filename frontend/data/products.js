@@ -1,4 +1,5 @@
 import {formatCurrency} from "../scripts/utils/money.js";
+import {fetchProducts} from "../scripts/services/api.js"
 
 export function getProduct(productId) {
   let matchingProduct;
@@ -13,7 +14,7 @@ export function getProduct(productId) {
 }
 
 export class Product {
-  id;
+  _id;
   image;
   name;
   rating;
@@ -77,21 +78,29 @@ export class Appliance extends Product {
 
 export let products = [];
 
-export function loadProductsFetch() {
-  return fetch('https://supersimplebackend.dev/products').then((response) => {
-    return response.json();
-  }).then((productsData) => {
+export async function loadProductsFetch() {
+  try {
+    const productsData = await fetchProducts();
+
     products = productsData.map((productDetails) => {
-      if (productDetails.type === "clothing") {
-        return new Clothing(productDetails);
-      } else if (productDetails.type === "appliance") {
-        return new Appliance(productDetails);
+      const normalizedProduct = {
+        ...productDetails,
+        id: productDetails._id
+      };
+
+      if (normalizedProduct.type === 'clothing') {
+        return new Clothing(normalizedProduct);
       }
-      return new Product(productDetails);
+
+      if (normalizedProduct.type === 'appliance') {
+        return new Appliance(normalizedProduct);
+      }
+
+      return new Product(normalizedProduct);
     });
-  }).catch((error) => {
+  } catch (error) {
     console.error('Error loading products:', error);
-  });
+  }
 }
 
 // export const products = [

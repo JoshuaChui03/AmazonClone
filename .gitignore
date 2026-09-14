@@ -1,1 +1,18 @@
-/.idea/
+# IDE / OS
+.idea/
+.vscode/
+.DS_Store
+__MACOSX/
+
+# Backend dependencies
+backend/node_modules/
+
+# Environment variables / secrets
+backend/.env
+
+# Logs
+backend/logs/
+*.log
+
+# Optional coverage output
+coverage/

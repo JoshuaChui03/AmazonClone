@@ -1,4 +1,4 @@
-const API_URL = 'https://supersimplebackend.dev';
+const API_URL = 'http://localhost:3500';
 
 async function request(path, options = {}) {
   const response = await fetch(`${API_URL}${path}`, options);
