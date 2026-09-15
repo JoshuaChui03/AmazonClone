@@ -1,4 +1,4 @@
-import {cart, calculateCartQuantity, resetCart} from "../../data/cart.js";
+import {cart, calculateCartQuantity, resetCartLocally} from "../../data/cart.js";
 import {getProduct} from "../../data/products.js";
 import {getDeliveryOption} from "../../data/deliveryOptions.js";
 import {formatCurrency} from "../utils/money.js"
@@ -60,7 +60,7 @@ export function renderPaymentSummary() {
 
   document.querySelector('.js-place-order-button').addEventListener('click', async () => {
     try {
-      const order = await createOrder(cart);
+      const order = await createOrder();
 
       console.log(cart);
       console.log('order', order);
@@ -69,7 +69,7 @@ export function renderPaymentSummary() {
       console.error(error);
     }
 
-    resetCart();
-    //window.location.href = 'orders.html';
+    resetCartLocally();
+    window.location.href = 'orders.html';
   });
 }

@@ -96,9 +96,9 @@ export function renderOrderSummary() {
   document.querySelector('.js-order-summary').innerHTML = cartSummaryHtML;
 
   document.querySelectorAll('.js-delete-link').forEach((link) => {
-    link.addEventListener('click', (e) => {
+    link.addEventListener('click', async () => {
       const productId = link.dataset.productId;
-      removeFromCart(productId);
+      await removeFromCart(productId);
       renderOrderSummary()
       renderPaymentSummary();
       renderCheckoutHeader();
@@ -114,7 +114,7 @@ export function renderOrderSummary() {
   })
 
   document.querySelectorAll('.js-save-quantity-link').forEach((link) => {
-    link.addEventListener('click', (e) => {
+    link.addEventListener('click', async () => {
       const productId = link.dataset.productId;
 
       const newQuantity = Number(document.querySelector(`.js-quantity-input-${productId}`).value);
@@ -123,7 +123,7 @@ export function renderOrderSummary() {
         alert('Quantity must be at least 0 and less than 1000');
         return;
       }
-      updateQuantity(productId, newQuantity);
+      await updateQuantity(productId, newQuantity);
 
       document.querySelector(`.js-cart-item-container-${productId}`).classList.remove('is-editing-quantity');
 
@@ -134,9 +134,9 @@ export function renderOrderSummary() {
   })
 
   document.querySelectorAll('.js-delivery-option').forEach((element) => {
-    element.addEventListener('click', (e) => {
+    element.addEventListener('click', async () => {
       const {productId, deliveryOptionId} = element.dataset;
-      updateDeliverOption(productId, deliveryOptionId);
+      await updateDeliverOption(productId, deliveryOptionId);
       renderOrderSummary();
       renderPaymentSummary();
     })

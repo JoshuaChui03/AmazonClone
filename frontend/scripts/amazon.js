@@ -1,4 +1,5 @@
 import {addToCart, loadCartFetch} from '../data/cart.js'
+import {ensureGuestSession} from './services/api.js';
 import {products, loadProductsFetch} from '../data/products.js'
 import {renderAmazonHeader, updateCartQuantity} from "./amazonHeader.js";
 
@@ -6,6 +7,7 @@ loadPage();
 
 async function loadPage() {
   try {
+    await ensureGuestSession();
     await Promise.all([
       loadProductsFetch(),
       loadCartFetch()
@@ -113,11 +115,11 @@ function renderProductsGrid() {
 
   document.querySelectorAll('.js-add-to-cart').forEach((button) => {
     let timeoutId;
-    button.addEventListener('click', (e) => {
+    button.addEventListener('click', async () => {
       const productId = button.dataset.productId;
       const quantity = Number(document.querySelector(`.js-quantity-selector-${productId}`).value);
 
-      addToCart(productId, quantity);
+      await addToCart(productId, quantity);
       timeoutId = addedToCartCheckmark(timeoutId, productId);
       updateCartQuantity();
     })

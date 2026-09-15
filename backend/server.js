@@ -2,10 +2,12 @@ require('dotenv').config();
 const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
+const cookieParser = require('cookie-parser');
 const connectDB = require('./config/dbConn');
-const credentials = require("./middleware/credentials");
 const corsOptions = require('./config/corsOptions');
+const credentials = require('./middleware/credentials');
 const errorHandler = require('./middleware/errorHandler');
+const verifyGuest = require('./middleware/verifyGuest');
 
 const app = express();
 const PORT = process.env.PORT || 3500;
@@ -21,10 +23,21 @@ app.use((req, res, next) => {
 
 app.use(credentials);
 app.use(cors(corsOptions));
+
 app.use(express.urlencoded({ extended: false }));
 app.use(express.json());
+app.use(cookieParser());
 
+// Public routes.
+app.get('/health', (req, res) => {
+  res.json({ status: 'ok' });
+});
+app.use('/guest', require('./routes/guest'));
 app.use('/products', require('./routes/api/products'));
+
+// Everything below requires the 10-minute HttpOnly guest cookie.
+app.use(verifyGuest);
+app.use('/cart', require('./routes/api/cart'));
 app.use('/orders', require('./routes/api/orders'));
 
 app.use((req, res) => {

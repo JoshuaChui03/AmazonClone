@@ -1,17 +1,20 @@
-import {orders} from "../data/orders.js";
+import {orders, loadOrdersFetch} from "../data/orders.js";
 import dayjs from 'https://unpkg.com/supersimpledev@8.5.0/dayjs/esm/index.js';
 import {formatCurrency} from './utils/money.js'
 import {getProduct, loadProductsFetch} from "../data/products.js";
 import {addToCart, loadCartFetch} from "../data/cart.js";
 import {renderAmazonHeader, updateCartQuantity} from "./amazonHeader.js";
+import {ensureGuestSession} from './services/api.js';
 
 loadPage();
 
 async function loadPage() {
   try {
+    await ensureGuestSession();
     await Promise.all([
       loadProductsFetch(),
-      loadCartFetch()
+      loadCartFetch(),
+      loadOrdersFetch()
     ]);
   } catch (error) {
     console.error("Error loading page:", error);
@@ -96,8 +99,8 @@ async function loadPage() {
   document.querySelector(".js-orders-grid").innerHTML = ordersHTML;
 
   document.querySelectorAll(".js-buy-again-button").forEach((button) => {
-    button.addEventListener('click', () => {
-      addToCart(button.dataset.productId);
+    button.addEventListener('click', async () => {
+      await addToCart(button.dataset.productId);
       updateCartQuantity();
     });
   });

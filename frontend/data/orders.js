@@ -1,25 +1,28 @@
-import {Product} from "./products.js";
+import {fetchOrders} from '../scripts/services/api.js';
 
-export const orders = JSON.parse(localStorage.getItem('orders')) || [];
+export let orders = [];
 
-export function addOrder(order) {
-  orders.unshift(order);
-  console.log('orders', orders);
-  saveToStorage();
+function normalizeOrder({_id, ...order}) {
+  return {
+    ...order,
+    id: _id
+  };
 }
 
-function saveToStorage() {
-  localStorage.setItem('orders', JSON.stringify(orders));
+export async function loadOrdersFetch() {
+  const ordersData = await fetchOrders();
+
+  orders = ordersData.map(normalizeOrder);
+
+  return orders;
+}
+
+export function addOrder(order) {
+  orders.unshift(normalizeOrder(order));
 }
 
 export function getOrder(orderId) {
-  let matchingOrder;
-
-  orders.forEach((order) => {
-    if (order.id === orderId) {
-      matchingOrder = order;
-    }
-  });
-
-  return matchingOrder;
+  return orders.find(
+      (order) => order.id === orderId
+  );
 }

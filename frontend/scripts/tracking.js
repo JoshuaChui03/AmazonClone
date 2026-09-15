@@ -1,14 +1,17 @@
 import {getProduct, loadProductsFetch} from "../data/products.js";
-import {getOrder} from "../data/orders.js";
+import {getOrder, loadOrdersFetch} from "../data/orders.js";
 import dayjs from 'https://unpkg.com/dayjs@1.11.10/esm/index.js';
 import {loadCartFetch} from "../data/cart.js";
 import {renderAmazonHeader} from "./amazonHeader.js";
+import {ensureGuestSession} from './services/api.js';
 
 async function loadPage() {
   try {
+    await ensureGuestSession();
     await Promise.all([
       loadProductsFetch(),
-      loadCartFetch()
+      loadCartFetch(),
+      loadOrdersFetch()
     ]);
   } catch (error) {
     console.error("Error loading page:", error);

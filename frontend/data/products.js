@@ -14,7 +14,7 @@ export function getProduct(productId) {
 }
 
 export class Product {
-  _id;
+  id;
   image;
   name;
   rating;
@@ -22,13 +22,14 @@ export class Product {
   keywords;
 
   constructor(productDetails) {
-    this.id = productDetails.id;
+    this.id = productDetails._id;
     this.image = productDetails.image;
     this.name = productDetails.name;
     this.rating = productDetails.rating;
     this.priceCents = productDetails.priceCents;
     this.keywords = productDetails.keywords;
   }
+
 
   getStarsUrl() {
     return `images/ratings/rating-${this.rating.stars * 10}.png`;
@@ -83,20 +84,15 @@ export async function loadProductsFetch() {
     const productsData = await fetchProducts();
 
     products = productsData.map((productDetails) => {
-      const normalizedProduct = {
-        ...productDetails,
-        id: productDetails._id
-      };
-
-      if (normalizedProduct.type === 'clothing') {
-        return new Clothing(normalizedProduct);
+      if (productDetails.type === 'clothing') {
+        return new Clothing(productDetails);
       }
 
-      if (normalizedProduct.type === 'appliance') {
-        return new Appliance(normalizedProduct);
+      if (productDetails.type === 'appliance') {
+        return new Appliance(productDetails);
       }
 
-      return new Product(normalizedProduct);
+      return new Product(productDetails);
     });
   } catch (error) {
     console.error('Error loading products:', error);

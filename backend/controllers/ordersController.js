@@ -1,4 +1,4 @@
-const { randomUUID } = require('crypto');
+const mongoose = require('mongoose');
 const Order = require('../model/Order');
 const Product = require('../model/Product');
 
@@ -26,8 +26,31 @@ function addBusinessDays(startDate, businessDays) {
 
 const getAllOrders = async (req, res, next) => {
     try {
-        const orders = await Order.find().sort({ orderTime: -1 });
+        const orders = await Order.find({ guestId: req.guest._id })
+            .sort({ orderTime: -1 });
+
         res.json(orders);
+    } catch (err) {
+        next(err);
+    }
+};
+
+const getOrderById = async (req, res, next) => {
+    try {
+        if (!mongoose.isValidObjectId(req.params.id)) {
+            return res.status(400).json({ message: 'Invalid order id.' });
+        }
+
+        const order = await Order.findOne({
+            _id: req.params.id,
+            guestId: req.guest._id
+        });
+
+        if (!order) {
+            return res.status(404).json({ message: 'Order not found.' });
+        }
+
+        res.json(order);
     } catch (err) {
         next(err);
     }
@@ -35,7 +58,7 @@ const getAllOrders = async (req, res, next) => {
 
 const createOrder = async (req, res, next) => {
     try {
-        const cart = req.body?.cart;
+        const cart = req.guest.cart;
 
         if (!Array.isArray(cart) || cart.length === 0) {
             return res.status(400).json({ message: 'A non-empty cart is required.' });
@@ -52,8 +75,14 @@ const createOrder = async (req, res, next) => {
             }
         }
 
-        const productIds = [...new Set(cart.map((item) => item.productId))];
-        const products = await Product.find({ _id: { $in: productIds } });
+        const productIds = [...new Set(
+            cart.map((item) => item.productId.toString())
+        )];
+
+        const products = await Product.find({
+            _id: { $in: productIds }
+        });
+
         const productsById = new Map(
             products.map((product) => [product._id.toString(), product])
         );
@@ -67,7 +96,8 @@ const createOrder = async (req, res, next) => {
         let shippingCents = 0;
 
         const orderProducts = cart.map((item) => {
-            const product = productsById.get(item.productId);
+            const productId = item.productId.toString();
+            const product = productsById.get(productId);
             const deliveryOption = deliveryOptions[item.deliveryOptionId];
 
             subtotalCents += product.priceCents * item.quantity;
@@ -87,10 +117,15 @@ const createOrder = async (req, res, next) => {
         const taxCents = Math.round(totalBeforeTaxCents * 0.1);
 
         const order = await Order.create({
+            guestId: req.guest._id,
             orderTime,
             totalCostCents: totalBeforeTaxCents + taxCents,
-            products: orderProducts
+            products: orderProducts,
+            expiresAt: req.guest.expiresAt
         });
+
+        req.guest.cart = [];
+        await req.guest.save();
 
         res.status(201).json(order);
     } catch (err) {
@@ -100,5 +135,6 @@ const createOrder = async (req, res, next) => {
 
 module.exports = {
     getAllOrders,
+    getOrderById,
     createOrder
 };

@@ -3,11 +3,12 @@ import {renderPaymentSummary} from "./checkout/paymentSummary.js";
 import {renderCheckoutHeader} from "./checkout/checkoutHeader.js";
 import {loadProductsFetch} from "../data/products.js";
 import {loadCartFetch} from "../data/cart.js";
+import {ensureGuestSession} from './services/api.js';
 
-// import '../data/cart-class.js';
 
 async function loadPage() {
   try {
+    await ensureGuestSession();
     await Promise.all([
       loadProductsFetch(),
       loadCartFetch()
