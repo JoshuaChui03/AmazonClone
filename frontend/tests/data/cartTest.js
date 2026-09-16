@@ -1,116 +1,142 @@
-import {addToCart, cart, loadFromStorage, removeFromCart, updateDeliverOption} from "../../data/cart.js";
+import {
+  addToCart,
+  cart,
+  loadCartFetch,
+  removeFromCart,
+  updateDeliverOption
+} from '../../data/cart.js';
+import {installApiMock} from '../helpers/mockApi.js';
+import {productId1, productId2} from '../helpers/testData.js';
 
 describe('test suite: addToCart', () => {
-  beforeEach(() => {
-    spyOn(localStorage, 'setItem');
-  })
-
-  it('adds an existing product to the cart', () => {
-    spyOn(localStorage, 'getItem').and.callFake(() => {
-      return JSON.stringify([{
-        productId: 'e43638ce-6aa0-4b85-b27f-e1d07eb678c6',
+  it('adds an existing product to the cart', async () => {
+    const {fetchSpy} = installApiMock({
+      cart: [{
+        productId: productId1,
         quantity: 1,
         deliveryOptionId: '1'
-      }]);
+      }]
     });
-    loadFromStorage();
-    addToCart('e43638ce-6aa0-4b85-b27f-e1d07eb678c6');
+
+    await loadCartFetch();
+    fetchSpy.calls.reset();
+
+    await addToCart(productId1);
+
     expect(cart.length).toEqual(1);
-    expect(cart[0].productId).toEqual('e43638ce-6aa0-4b85-b27f-e1d07eb678c6');
-    expect(cart[0].quantity).toEqual(2);
-    expect(localStorage.setItem).toHaveBeenCalledTimes(1)
-    expect(localStorage.setItem).toHaveBeenCalledWith('cart', JSON.stringify([{
-      productId: 'e43638ce-6aa0-4b85-b27f-e1d07eb678c6',
+    expect(cart[0]).toEqual({
+      productId: productId1,
       quantity: 2,
       deliveryOptionId: '1'
-    }]))
+    });
+    expect(fetchSpy).toHaveBeenCalledTimes(1);
+    expect(fetchSpy.calls.mostRecent().args[1].method).toEqual('POST');
   });
 
-  it('adds a new product to the cart', () => {
-    spyOn(localStorage, 'getItem').and.callFake(() => {
-      return JSON.stringify([]);
-    });
-    loadFromStorage();
-    addToCart('e43638ce-6aa0-4b85-b27f-e1d07eb678c6');
+  it('adds a new product to the cart', async () => {
+    const {fetchSpy} = installApiMock({cart: []});
+
+    await loadCartFetch();
+    fetchSpy.calls.reset();
+
+    await addToCart(productId1);
+
     expect(cart.length).toEqual(1);
-    expect(cart[0].productId).toEqual('e43638ce-6aa0-4b85-b27f-e1d07eb678c6');
-    expect(cart[0].quantity).toEqual(1);
-    expect(localStorage.setItem).toHaveBeenCalledTimes(1)
-    expect(localStorage.setItem).toHaveBeenCalledWith('cart', JSON.stringify([{
-      productId: 'e43638ce-6aa0-4b85-b27f-e1d07eb678c6',
+    expect(cart[0]).toEqual({
+      productId: productId1,
       quantity: 1,
       deliveryOptionId: '1'
-    }]))
+    });
+    expect(fetchSpy).toHaveBeenCalledTimes(1);
   });
 });
 
 describe('test suite: removeFromCart', () => {
-  beforeEach(() => {
-    spyOn(localStorage, 'setItem');
-    spyOn(localStorage, 'getItem').and.callFake(() => {
-      return JSON.stringify([{
-        productId: 'e43638ce-6aa0-4b85-b27f-e1d07eb678c6',
+  it('removes an existing product from the cart', async () => {
+    installApiMock({
+      cart: [{
+        productId: productId1,
         quantity: 1,
         deliveryOptionId: '1'
-      }]);
+      }]
     });
-    loadFromStorage();
+
+    await loadCartFetch();
+    await removeFromCart(productId1);
+
+    expect(cart).toEqual([]);
   });
 
-  it('removes an existing product from the cart', () => {
-    removeFromCart('e43638ce-6aa0-4b85-b27f-e1d07eb678c6')
-    expect(cart.length).toEqual(0);
-    expect(localStorage.setItem).toHaveBeenCalledTimes(1)
-    expect(localStorage.setItem).toHaveBeenCalledWith('cart', JSON.stringify([]));
-  });
+  it('rejects removing a product that is not in the cart', async () => {
+    installApiMock({
+      cart: [{
+        productId: productId1,
+        quantity: 1,
+        deliveryOptionId: '1'
+      }]
+    });
 
-  it('removes an non existing product from the cart', () => {
-    removeFromCart('1')
+    await loadCartFetch();
+
+    await expectAsync(
+      removeFromCart(productId2)
+    ).toBeRejectedWithError('Cart item not found.');
+
     expect(cart.length).toEqual(1);
-    expect(localStorage.setItem).toHaveBeenCalledTimes(1)
-    expect(localStorage.setItem).toHaveBeenCalledWith('cart', JSON.stringify([{
-      productId: 'e43638ce-6aa0-4b85-b27f-e1d07eb678c6',
-      quantity: 1,
-      deliveryOptionId: '1'
-    }]));
+    expect(cart[0].productId).toEqual(productId1);
   });
-})
+});
+
 describe('test suite: updateDeliveryOption', () => {
-  beforeEach(() => {
-    spyOn(localStorage, 'setItem');
-    spyOn(localStorage, 'getItem').and.callFake(() => {
-      return JSON.stringify([{
-        productId: 'e43638ce-6aa0-4b85-b27f-e1d07eb678c6',
+  it('updates an existing product in the cart', async () => {
+    installApiMock({
+      cart: [{
+        productId: productId1,
         quantity: 1,
         deliveryOptionId: '1'
-      }]);
+      }]
     });
-    loadFromStorage();
-  })
 
-  it('updates an existing product from the cart', () => {
-    updateDeliverOption('e43638ce-6aa0-4b85-b27f-e1d07eb678c6', '3')
+    await loadCartFetch();
+    await updateDeliverOption(productId1, '3');
+
     expect(cart.length).toEqual(1);
     expect(cart[0].deliveryOptionId).toEqual('3');
-    expect(localStorage.setItem).toHaveBeenCalledTimes(1);
-    expect(localStorage.setItem).toHaveBeenCalledWith('cart', JSON.stringify([{
-      productId: 'e43638ce-6aa0-4b85-b27f-e1d07eb678c6',
-      quantity: 1,
-      deliveryOptionId: '3'
-    }]));
   });
 
-  it('updates an non existing product from the cart', () => {
-    updateDeliverOption('1', '3')
-    expect(cart.length).toEqual(1);
-    expect(cart[0].deliveryOptionId).toEqual('1');
-    expect(localStorage.setItem).toHaveBeenCalledTimes(0);
-  })
+  it('rejects updating a product that is not in the cart', async () => {
+    installApiMock({
+      cart: [{
+        productId: productId1,
+        quantity: 1,
+        deliveryOptionId: '1'
+      }]
+    });
 
-  it('updates an existing product from the cart with non existing delivery option', () => {
-    updateDeliverOption('1', '4')
-    expect(cart.length).toEqual(1);
+    await loadCartFetch();
+
+    await expectAsync(
+      updateDeliverOption(productId2, '3')
+    ).toBeRejectedWithError('Cart item not found.');
+
     expect(cart[0].deliveryOptionId).toEqual('1');
-    expect(localStorage.setItem).toHaveBeenCalledTimes(0);
-  })
-})
+  });
+
+  it('does not make a request for an invalid delivery option', async () => {
+    const {fetchSpy} = installApiMock({
+      cart: [{
+        productId: productId1,
+        quantity: 1,
+        deliveryOptionId: '1'
+      }]
+    });
+
+    await loadCartFetch();
+    fetchSpy.calls.reset();
+
+    await updateDeliverOption(productId1, '4');
+
+    expect(cart[0].deliveryOptionId).toEqual('1');
+    expect(fetchSpy).not.toHaveBeenCalled();
+  });
+});

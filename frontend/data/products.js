@@ -22,7 +22,7 @@ export class Product {
   keywords;
 
   constructor(productDetails) {
-    this.id = productDetails._id;
+    this.id = productDetails.id ?? productDetails._id;
     this.image = productDetails.image;
     this.name = productDetails.name;
     this.rating = productDetails.rating;

@@ -1,32 +1,22 @@
-import {renderPaymentSummary} from "../../scripts/checkout/paymentSummary.js";
-import {loadFromStorage} from "../../data/cart.js";
-import {loadProductsFetch} from "../../data/products.js";
+import {renderPaymentSummary} from '../../scripts/checkout/paymentSummary.js';
+import {loadCartFetch} from '../../data/cart.js';
+import {loadProductsFetch} from '../../data/products.js';
+import {installApiMock} from '../helpers/mockApi.js';
+import {defaultTestCart, testProducts} from '../helpers/testData.js';
 
 describe('test suite: renderPaymentSummary', () => {
-  beforeAll(async () => {
-    await loadProductsFetch();
-  });
-
-  beforeEach(() => {
+  beforeEach(async () => {
     document.querySelector('.js-test-container').innerHTML = `
       <div class="js-payment-summary"></div>
-    `
+    `;
 
-    spyOn(localStorage, 'getItem').and.callFake(() => {
-      return JSON.stringify([{
-        productId: '6aa7b605df8996a26403ab0a',
-        quantity: 2,
-        deliveryOptionId: '1'
-      },
-        {
-          productId: '6aa7b605df8996a26403ab0b',
-          quantity: 1,
-          deliveryOptionId: '2'
-        }]);
+    installApiMock({
+      products: testProducts,
+      cart: defaultTestCart()
     });
-    spyOn(localStorage, 'setItem');
-    loadFromStorage();
 
+    await loadProductsFetch();
+    await loadCartFetch();
     renderPaymentSummary();
   });
 
@@ -34,7 +24,7 @@ describe('test suite: renderPaymentSummary', () => {
     document.querySelector('.js-test-container').innerHTML = '';
   });
 
-  it ('displays the payment summary', () => {
+  it('displays the payment summary', () => {
     expect(document.querySelector('.payment-summary-title').innerText).toEqual('Order Summary');
     expect(document.querySelector('.js-payment-summary-cart-quantity').innerText).toEqual('Items (3):');
     expect(document.querySelector('.js-shipping-price').innerText).toEqual('$4.99');
