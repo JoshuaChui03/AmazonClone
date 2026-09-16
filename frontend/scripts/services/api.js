@@ -1,12 +1,11 @@
 import {
   showGuestSessionStartedAlert,
-  showGuestSessionExpiredAlert
+  showGuestSessionExpiredAlert, showUserSessionExpiredAlert
 } from '../utils/sessionAlerts.js';
 
 import {API_URL} from '../config/config.js';
 
 let guestExpirationTimer;
-let guestRenewalPromise;
 let guestExpirationPromise;
 let guestSessionDurationMinutes;
 let currentSession = null;
@@ -59,7 +58,7 @@ function scheduleGuestExpiration(expiresAt) {
 async function handleUserExpiration() {
   clearGuestExpirationTimer();
   currentSession = null;
-  alert('Your user session has expired. Please sign in again.');
+  showUserSessionExpiredAlert();
   window.location.replace('login.html');
 
   // Keep callers waiting until the browser navigates away.
@@ -79,13 +78,12 @@ async function request(path, options = {}, retryGuest = true) {
       return handleUserExpiration();
     }
 
-    if (data?.code === 'GUEST_REQUIRED') {
-      await createGuestSession(true);
-      return request(path, options, false);
-    }
-
     if (data?.code === 'GUEST_EXPIRED' || data?.code === 'GUEST_INVALID') {
       return handleGuestExpiration();
+    }
+
+    if (data?.code === 'GUEST_REQUIRED') {
+      return redirectToLogin();
     }
   }
 
@@ -117,18 +115,13 @@ export async function createGuestSession(showStartAlert = true) {
   }
 }
 
-async function renewGuestSession() {
-  if (guestRenewalPromise) {
-    return guestRenewalPromise;
-  }
+function redirectToLogin() {
+  clearGuestExpirationTimer();
+  currentSession = null;
+  window.location.replace('login.html');
 
-  guestRenewalPromise = createGuestSession(false);
-
-  try {
-    await guestRenewalPromise;
-  } finally {
-    guestRenewalPromise = undefined;
-  }
+  // Keep callers waiting until the browser navigates away.
+  return new Promise(() => {});
 }
 
 async function handleGuestExpiration() {
@@ -138,12 +131,10 @@ async function handleGuestExpiration() {
 
   guestExpirationPromise = (async () => {
     clearGuestExpirationTimer();
+    currentSession = null;
 
     showGuestSessionExpiredAlert(guestSessionDurationMinutes);
-    await renewGuestSession();
-
-    window.location.replace('amazon.html');
-    return new Promise(() => {});
+    return redirectToLogin();
   })();
 
   return guestExpirationPromise;
@@ -166,8 +157,7 @@ async function ensureGuestSession() {
     }
 
     if (error.code === 'GUEST_REQUIRED') {
-      await createGuestSession(true);
-      return;
+      return redirectToLogin();
     }
 
     return handleGuestExpiration();

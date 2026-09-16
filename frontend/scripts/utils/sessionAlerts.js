@@ -8,7 +8,8 @@ export function showGuestSessionStartedAlert(sessionDurationMinutes) {
 export function showGuestSessionExpiredAlert(sessionDurationMinutes) {
     alert(
         `Your ${sessionDurationMinutes}-minute guest session has expired. ` +
-        'Your previous cart and orders are no longer available. '
+        'Your previous cart and orders are no longer available. ' +
+        'You will be returned to the sign-in page.'
     );
 }
 
