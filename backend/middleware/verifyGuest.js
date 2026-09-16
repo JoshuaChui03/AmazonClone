@@ -40,14 +40,19 @@ const verifyGuest = async (req, res, next) => {
       }
 
       res.clearCookie(GUEST_COOKIE_NAME, getGuestCookieClearOptions());
-      return res.status(401).json({ message: 'Guest session expired.' });
+      return res.status(401).json({ code: 'GUEST_EXPIRED', message: 'Guest session expired.' });
     }
 
     req.guest = guest;
     next();
   } catch (err) {
     res.clearCookie(GUEST_COOKIE_NAME, getGuestCookieClearOptions());
-    return res.status(401).json({ message: 'Guest session expired or invalid.' });
+    return res.status(401).json({
+      code: err.name === 'TokenExpiredError' ? 'GUEST_EXPIRED' : 'GUEST_INVALID',
+      message: err.name === 'TokenExpiredError'
+        ? 'Guest session expired.'
+        : 'Guest session invalid.'
+    });
   }
 };
 

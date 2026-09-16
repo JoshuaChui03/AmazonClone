@@ -3,11 +3,11 @@ import {getOrder, loadOrdersFetch} from "../data/orders.js";
 import dayjs from 'https://unpkg.com/dayjs@1.11.10/esm/index.js';
 import {loadCartFetch} from "../data/cart.js";
 import {renderAmazonHeader} from "./amazonHeader.js";
-import {ensureGuestSession} from './services/api.js';
+import {ensureSession} from './services/api.js';
 
 async function loadPage() {
   try {
-    await ensureGuestSession();
+    await ensureSession();
     await Promise.all([
       loadProductsFetch(),
       loadCartFetch(),
@@ -38,7 +38,8 @@ async function loadPage() {
   const currentTime = dayjs();
   const orderTime = dayjs(order.orderTime);
   const deliveryTime = dayjs(productDetails.estimatedDeliveryTime);
-  const percentProgress = ((currentTime - orderTime) / (deliveryTime - orderTime)) * 100;
+  const rawProgress = ((currentTime - orderTime) / (deliveryTime - orderTime)) * 100;
+  const percentProgress = Math.min(100, Math.max(0, rawProgress));
 
   const deliveredMessage = currentTime < deliveryTime ? 'Arriving on' : 'Delivered on';
 

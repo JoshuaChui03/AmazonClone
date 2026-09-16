@@ -97,7 +97,7 @@
 }
 
 .amazon-header-right-section {
-  width: 180px;
+  width: 290px;
   flex-shrink: 0;
   display: flex;
   justify-content: end;
@@ -146,4 +146,11 @@
   
   width: 26px;
   text-align: center;
+}
+
+.account-link {
+  color: white;
+  background: none;
+  font-family: inherit;
+  text-align: left;
 }

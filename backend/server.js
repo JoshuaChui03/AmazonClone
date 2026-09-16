@@ -7,7 +7,7 @@ const connectDB = require('./config/dbConn');
 const corsOptions = require('./config/corsOptions');
 const credentials = require('./middleware/credentials');
 const errorHandler = require('./middleware/errorHandler');
-const verifyGuest = require('./middleware/verifyGuest');
+const verifyAccount = require('./middleware/verifyAccount');
 
 const app = express();
 const PORT = process.env.PORT || 3500;
@@ -33,10 +33,11 @@ app.get('/health', (req, res) => {
   res.json({ status: 'ok' });
 });
 app.use('/guest', require('./routes/guest'));
+app.use('/auth', require('./routes/auth'));
 app.use('/products', require('./routes/api/products'));
 
-// Everything below requires the 10-minute HttpOnly guest cookie.
-app.use(verifyGuest);
+// Everything below requires either a persistent user login or a guest session.
+app.use(verifyAccount);
 app.use('/cart', require('./routes/api/cart'));
 app.use('/orders', require('./routes/api/orders'));
 

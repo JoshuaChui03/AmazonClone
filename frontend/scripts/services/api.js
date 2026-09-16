@@ -3,12 +3,13 @@ import {
   showGuestSessionExpiredAlert
 } from '../utils/sessionAlerts.js';
 
-const API_URL = 'http://localhost:3500';
+import {API_URL} from '../config/config.js';
 
 let guestExpirationTimer;
 let guestRenewalPromise;
 let guestExpirationPromise;
 let guestSessionDurationMinutes;
+let currentSession = null;
 
 class ApiError extends Error {
   constructor(message, status, code) {
@@ -43,8 +44,7 @@ function clearGuestExpirationTimer() {
 function scheduleGuestExpiration(expiresAt) {
   clearGuestExpirationTimer();
 
-  const timeRemaining =
-      new Date(expiresAt).getTime() - Date.now();
+  const timeRemaining = new Date(expiresAt).getTime() - Date.now();
 
   if (timeRemaining <= 0) {
     void handleGuestExpiration();
@@ -56,6 +56,16 @@ function scheduleGuestExpiration(expiresAt) {
   }, timeRemaining);
 }
 
+async function handleUserExpiration() {
+  clearGuestExpirationTimer();
+  currentSession = null;
+  alert('Your user session has expired. Please sign in again.');
+  window.location.replace('login.html');
+
+  // Keep callers waiting until the browser navigates away.
+  return new Promise(() => {});
+}
+
 async function request(path, options = {}, retryGuest = true) {
   const response = await fetch(`${API_URL}${path}`, {
     ...options,
@@ -64,30 +74,27 @@ async function request(path, options = {}, retryGuest = true) {
 
   const data = await parseResponse(response);
 
-  if (
-      response.status === 401 &&
-      retryGuest &&
-      path !== '/guest'
-  ) {
-    if (data?.code === 'GUEST_REQUIRED') {
-      await createGuestSession(true);
-
-      return request(
-          path,
-          options,
-          false
-      );
+  if (response.status === 401 && retryGuest && path !== '/guest') {
+    if (data?.code === 'USER_EXPIRED' || data?.code === 'USER_INVALID') {
+      return handleUserExpiration();
     }
 
-    return handleGuestExpiration();
+    if (data?.code === 'GUEST_REQUIRED') {
+      await createGuestSession(true);
+      return request(path, options, false);
+    }
+
+    if (data?.code === 'GUEST_EXPIRED' || data?.code === 'GUEST_INVALID') {
+      return handleGuestExpiration();
+    }
   }
 
   if (!response.ok) {
     throw new ApiError(
-        data?.message ||
-        `Request failed: ${response.status} ${response.statusText}`,
-        response.status,
-        data?.code
+      data?.message ||
+      `Request failed: ${response.status} ${response.statusText}`,
+      response.status,
+      data?.code
     );
   }
 
@@ -95,23 +102,18 @@ async function request(path, options = {}, retryGuest = true) {
 }
 
 export async function createGuestSession(showStartAlert = true) {
-  const session = await request(
-      '/guest',
-      { method: 'POST' },
-      false
-  );
+  const session = await request('/guest', { method: 'POST' }, false);
 
-  guestSessionDurationMinutes =
-      session.sessionDurationMinutes;
+  currentSession = {
+    type: 'guest',
+    account: session.guest
+  };
 
-  scheduleGuestExpiration(
-      session.guest.expiresAt
-  );
+  guestSessionDurationMinutes = session.sessionDurationMinutes;
+  scheduleGuestExpiration(session.guest.expiresAt);
 
   if (showStartAlert) {
-    showGuestSessionStartedAlert(
-        guestSessionDurationMinutes
-    );
+    showGuestSessionStartedAlert(guestSessionDurationMinutes);
   }
 }
 
@@ -120,8 +122,7 @@ async function renewGuestSession() {
     return guestRenewalPromise;
   }
 
-  guestRenewalPromise =
-      createGuestSession(false);
+  guestRenewalPromise = createGuestSession(false);
 
   try {
     await guestRenewalPromise;
@@ -138,33 +139,27 @@ async function handleGuestExpiration() {
   guestExpirationPromise = (async () => {
     clearGuestExpirationTimer();
 
-    showGuestSessionExpiredAlert(
-        guestSessionDurationMinutes
-    );
-
+    showGuestSessionExpiredAlert(guestSessionDurationMinutes);
     await renewGuestSession();
 
     window.location.replace('amazon.html');
+    return new Promise(() => {});
   })();
 
   return guestExpirationPromise;
 }
 
-export async function ensureGuestSession() {
+async function ensureGuestSession() {
   try {
-    const session = await request(
-        '/guest',
-        {},
-        false
-    );
+    const session = await request('/guest', {}, false);
 
-    guestSessionDurationMinutes =
-        session.sessionDurationMinutes;
+    currentSession = {
+      type: 'guest',
+      account: session.guest
+    };
 
-    scheduleGuestExpiration(
-        session.guest.expiresAt
-    );
-
+    guestSessionDurationMinutes = session.sessionDurationMinutes;
+    scheduleGuestExpiration(session.guest.expiresAt);
   } catch (error) {
     if (error.status !== 401) {
       throw error;
@@ -179,9 +174,65 @@ export async function ensureGuestSession() {
   }
 }
 
+export async function ensureSession() {
+  try {
+    const session = await request('/auth/session', {}, false);
+
+    clearGuestExpirationTimer();
+    currentSession = {
+      type: 'user',
+      account: session.user
+    };
+    return;
+  } catch (error) {
+    if (error.status !== 401) {
+      throw error;
+    }
+
+    if (error.code === 'USER_EXPIRED' || error.code === 'USER_INVALID') {
+      return handleUserExpiration();
+    }
+
+    if (error.code !== 'USER_REQUIRED') {
+      throw error;
+    }
+  }
+
+  await ensureGuestSession();
+}
+
+export function getCurrentSession() {
+  return currentSession;
+}
+
+export async function loginUser(username, password) {
+  const session = await request('/auth/login', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({ username, password })
+  }, false);
+
+  clearGuestExpirationTimer();
+  currentSession = {
+    type: 'user',
+    account: session.user
+  };
+
+  return session.user;
+}
+
+export async function logoutUser() {
+  await request('/auth/logout', { method: 'POST' }, false);
+  clearGuestExpirationTimer();
+  currentSession = null;
+}
+
 export async function deleteGuestSession() {
   const response = await request('/guest', { method: 'DELETE' }, false);
   clearGuestExpirationTimer();
+  currentSession = null;
   return response;
 }
 

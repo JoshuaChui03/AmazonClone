@@ -4,7 +4,7 @@ const Product = require('../model/Product');
 const deliveryOptionIds = new Set(['1', '2', '3']);
 
 const getCart = async (req, res) => {
-  res.json(req.guest.cart);
+  res.json(req.account.cart);
 };
 
 const addCartItem = async (req, res, next) => {
@@ -26,7 +26,7 @@ const addCartItem = async (req, res, next) => {
       return res.status(404).json({ message: 'Product not found.' });
     }
 
-    const existingItem = req.guest.cart.find(
+    const existingItem = req.account.cart.find(
         (item) => item.productId.equals(productId)
     );
 
@@ -37,15 +37,15 @@ const addCartItem = async (req, res, next) => {
 
       existingItem.quantity += quantity;
     } else {
-      req.guest.cart.push({
+      req.account.cart.push({
         productId,
         quantity,
         deliveryOptionId: '1'
       });
     }
 
-    await req.guest.save();
-    res.json(req.guest.cart);
+    await req.account.save();
+    res.json(req.account.cart);
   } catch (err) {
     next(err);
   }
@@ -60,7 +60,7 @@ const updateCartItem = async (req, res, next) => {
       return res.status(400).json({ message: 'Invalid product id.' });
     }
 
-    const cartItem = req.guest.cart.find(
+    const cartItem = req.account.cart.find(
         (item) => item.productId.equals(productId)
     );
 
@@ -74,11 +74,11 @@ const updateCartItem = async (req, res, next) => {
       }
 
       if (quantity === 0) {
-        req.guest.cart = req.guest.cart.filter(
+        req.account.cart = req.account.cart.filter(
             (item) => !item.productId.equals(productId)
         );
-        await req.guest.save();
-        return res.json(req.guest.cart);
+        await req.account.save();
+        return res.json(req.account.cart);
       }
 
       cartItem.quantity = quantity;
@@ -92,8 +92,8 @@ const updateCartItem = async (req, res, next) => {
       cartItem.deliveryOptionId = deliveryOptionId;
     }
 
-    await req.guest.save();
-    res.json(req.guest.cart);
+    await req.account.save();
+    res.json(req.account.cart);
   } catch (err) {
     next(err);
   }
@@ -107,12 +107,12 @@ const removeCartItem = async (req, res, next) => {
       return res.status(400).json({ message: 'Invalid product id.' });
     }
 
-    req.guest.cart = req.guest.cart.filter(
+    req.account.cart = req.account.cart.filter(
         (item) => !item.productId.equals(productId)
     );
 
-    await req.guest.save();
-    res.json(req.guest.cart);
+    await req.account.save();
+    res.json(req.account.cart);
   } catch (err) {
     next(err);
   }
@@ -120,9 +120,9 @@ const removeCartItem = async (req, res, next) => {
 
 const clearCart = async (req, res, next) => {
   try {
-    req.guest.cart = [];
-    await req.guest.save();
-    res.json(req.guest.cart);
+    req.account.cart = [];
+    await req.account.save();
+    res.json(req.account.cart);
   } catch (err) {
     next(err);
   }

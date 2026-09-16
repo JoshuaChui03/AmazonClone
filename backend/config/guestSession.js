@@ -1,5 +1,6 @@
-const GUEST_SESSION_MS = process.env.GUEST_SESSION_MINUTES * 60 * 1000;
-const GUEST_COOKIE_NAME = 'guestJwt';
+const GUEST_SESSION_MINUTES = Number(process.env.GUEST_SESSION_MINUTES || 10);
+const GUEST_SESSION_MS = GUEST_SESSION_MINUTES * 60 * 1000;
+const GUEST_COOKIE_NAME = process.env.GUEST_COOKIE_NAME || 'guestJwt';
 
 function getGuestCookieOptions() {
     const isProduction = process.env.NODE_ENV === 'production';
@@ -19,6 +20,7 @@ function getGuestCookieClearOptions() {
 }
 
 module.exports = {
+    GUEST_SESSION_MINUTES,
     GUEST_SESSION_MS,
     GUEST_COOKIE_NAME,
     getGuestCookieOptions,

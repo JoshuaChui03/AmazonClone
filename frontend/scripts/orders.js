@@ -4,13 +4,13 @@ import {formatCurrency} from './utils/money.js'
 import {getProduct, loadProductsFetch} from "../data/products.js";
 import {addToCart, loadCartFetch} from "../data/cart.js";
 import {renderAmazonHeader, updateCartQuantity} from "./amazonHeader.js";
-import {ensureGuestSession} from './services/api.js';
+import {ensureSession} from './services/api.js';
 
 loadPage();
 
 async function loadPage() {
   try {
-    await ensureGuestSession();
+    await ensureSession();
     await Promise.all([
       loadProductsFetch(),
       loadCartFetch(),

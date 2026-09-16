@@ -1,5 +1,5 @@
 import {addToCart, loadCartFetch} from '../data/cart.js'
-import {ensureGuestSession} from './services/api.js';
+import {ensureSession} from './services/api.js';
 import {products, loadProductsFetch} from '../data/products.js'
 import {renderAmazonHeader, updateCartQuantity} from "./amazonHeader.js";
 
@@ -7,7 +7,7 @@ loadPage();
 
 async function loadPage() {
   try {
-    await ensureGuestSession();
+    await ensureSession();
     await Promise.all([
       loadProductsFetch(),
       loadCartFetch()

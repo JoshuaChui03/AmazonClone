@@ -1,7 +1,24 @@
 import {calculateCartQuantity} from "../data/cart.js";
+import {getCurrentSession, logoutUser} from './services/api.js';
 
 export function renderAmazonHeader() {
+  const session = getCurrentSession();
+  const isUser = session?.type === 'user';
+  const username = session?.account?.username;
 
+  const accountHTML = isUser
+    ? `
+      <button class="account-link header-link js-sign-out-link">
+        <span class="returns-text">Hello, ${username}</span>
+        <span class="orders-text">Sign Out</span>
+      </button>
+    `
+    : `
+      <a class="account-link header-link" href="login.html">
+        <span class="returns-text">Guest</span>
+        <span class="orders-text">Sign In</span>
+      </a>
+    `;
 
   document.querySelector('.js-amazon-header').innerHTML = `
       <div class="amazon-header-left-section">
@@ -22,6 +39,8 @@ export function renderAmazonHeader() {
       </div>
 
       <div class="amazon-header-right-section">
+        ${accountHTML}
+
         <a class="orders-link header-link" href="orders.html">
           <span class="returns-text">Returns</span>
           <span class="orders-text">& Orders</span>
@@ -46,9 +65,17 @@ export function renderAmazonHeader() {
     const searchValue = document.querySelector('.js-search-bar').value;
     window.location.href = `amazon.html?search=${searchValue}`;
   });
+
+  const signOutLink = document.querySelector('.js-sign-out-link');
+
+  if (signOutLink) {
+    signOutLink.addEventListener('click', async () => {
+      await logoutUser();
+      window.location.replace('login.html');
+    });
+  }
 }
 
 export function updateCartQuantity() {
   document.querySelector(".js-cart-quantity").innerHTML = calculateCartQuantity();
 }
-

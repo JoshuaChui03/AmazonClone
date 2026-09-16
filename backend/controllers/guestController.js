@@ -28,7 +28,7 @@ const createGuest = async (req, res, next) => {
             process.env.GUEST_TOKEN_SECRET,
             {
                 subject: guest._id.toString(),
-                expiresIn: '10m'
+                expiresIn: Math.floor(GUEST_SESSION_MS / 1000)
             }
         );
 
@@ -45,7 +45,7 @@ const createGuest = async (req, res, next) => {
                 expiresAt: guest.expiresAt
             },
 
-            sessionDurationMinutes: process.env.GUEST_SESSION_MINUTES
+            sessionDurationMinutes: GUEST_SESSION_MS / (60 * 1000)
         });
     } catch (err) {
         next(err);
@@ -59,7 +59,7 @@ const getGuest = async (req, res) => {
             username: req.guest.username,
             expiresAt: req.guest.expiresAt
         },
-        sessionDurationMinutes: process.env.GUEST_SESSION_MINUTES
+        sessionDurationMinutes: GUEST_SESSION_MS / (60 * 1000)
     });
 };
 
