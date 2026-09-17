@@ -10,6 +10,7 @@ const {
 } = require('../config/userSession');
 const {
   GUEST_COOKIE_NAME,
+  GUEST_SESSION_MINUTES,
   getGuestCookieClearOptions
 } = require('../config/guestSession');
 
@@ -63,14 +64,27 @@ const login = async (req, res, next) => {
   }
 };
 
-const getSession = async (req, res) => {
-  res.json({
-    user: {
-      id: req.user._id,
-      username: req.user.username,
-      isDemo: req.user.isDemo
+const getSession = (req, res) => {
+  if (req.accountType === 'user') {
+    return res.json({
+      type: 'user',
+      account: {
+        id: req.account._id,
+        username: req.account.username,
+        isDemo: req.account.isDemo
+      },
+      sessionDurationHours: USER_SESSION_HOURS
+    });
+  }
+
+  return res.json({
+    type: 'guest',
+    account: {
+      _id: req.account._id,
+      username: req.account.username,
+      expiresAt: req.account.expiresAt
     },
-    sessionDurationHours: USER_SESSION_HOURS
+    sessionDurationMinutes: GUEST_SESSION_MINUTES
   });
 };
 

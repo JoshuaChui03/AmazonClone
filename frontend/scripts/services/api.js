@@ -140,39 +140,22 @@ async function handleGuestExpiration() {
   return guestExpirationPromise;
 }
 
-async function ensureGuestSession() {
-  try {
-    const session = await request('/guest', {}, false);
-
-    currentSession = {
-      type: 'guest',
-      account: session.guest
-    };
-
-    guestSessionDurationMinutes = session.sessionDurationMinutes;
-    scheduleGuestExpiration(session.guest.expiresAt);
-  } catch (error) {
-    if (error.status !== 401) {
-      throw error;
-    }
-
-    if (error.code === 'GUEST_REQUIRED') {
-      return redirectToLogin();
-    }
-
-    return handleGuestExpiration();
-  }
-}
-
 export async function ensureSession() {
   try {
     const session = await request('/auth/session', {}, false);
 
-    clearGuestExpirationTimer();
     currentSession = {
-      type: 'user',
-      account: session.user
+      type: session.type,
+      account: session.account
     };
+
+    if (session.type === 'guest') {
+      guestSessionDurationMinutes = session.sessionDurationMinutes;
+      scheduleGuestExpiration(session.account.expiresAt);
+    } else {
+      clearGuestExpirationTimer();
+    }
+
     return;
   } catch (error) {
     if (error.status !== 401) {
@@ -183,12 +166,16 @@ export async function ensureSession() {
       return handleUserExpiration();
     }
 
-    if (error.code !== 'USER_REQUIRED') {
-      throw error;
+    if (error.code === 'GUEST_EXPIRED' || error.code === 'GUEST_INVALID') {
+      return handleGuestExpiration();
     }
-  }
 
-  await ensureGuestSession();
+    if (error.code === 'GUEST_REQUIRED') {
+      return redirectToLogin();
+    }
+
+    throw error;
+  }
 }
 
 export function getCurrentSession() {
