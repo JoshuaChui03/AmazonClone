@@ -55,8 +55,8 @@ Express API, authentication, models, and database logic
 
 The application includes a persistent demo user so visitors can view saved cart data, orders, and order tracking.
 
-- Username: __Demo__
-- Password: __Demo__
+- Username: __demo__
+- Password: __demo__
 
 Guest users can also use the application through temporary guest sessions.
 
