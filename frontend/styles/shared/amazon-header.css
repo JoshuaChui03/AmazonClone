@@ -13,6 +13,7 @@
   left: 0;
   right: 0;
   height: 60px;
+  z-index: 1000;
 }
 
 .amazon-header-left-section {
@@ -153,4 +154,122 @@
   background: none;
   font-family: inherit;
   text-align: left;
+}
+
+
+/* Compact two-row header for narrow windows and portfolio iframes. */
+@media (max-width: 700px) {
+  .amazon-header {
+    height: 112px;
+    padding: 8px 10px;
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr) auto;
+    grid-template-rows: 44px 40px;
+    grid-template-areas:
+      "left spacer right"
+      "middle middle middle";
+    column-gap: 8px;
+    row-gap: 6px;
+  }
+
+  .amazon-header-left-section {
+    grid-area: left;
+    width: auto;
+    min-width: 0;
+    display: flex;
+    align-items: center;
+  }
+
+  .amazon-header-middle-section {
+    grid-area: middle;
+    width: 100%;
+    max-width: none;
+    min-width: 0;
+    margin: 0;
+  }
+
+  .amazon-header-right-section {
+    grid-area: right;
+    width: auto;
+    min-width: 0;
+    justify-self: end;
+    justify-content: flex-end;
+  }
+
+  .header-link {
+    padding: 4px;
+  }
+
+  .search-bar {
+    min-width: 0;
+    height: 38px;
+  }
+
+  .search-button {
+    height: 38px;
+  }
+
+  .account-link,
+  .orders-link {
+    white-space: nowrap;
+  }
+
+  .returns-text {
+    font-size: 11px;
+  }
+
+  .orders-text,
+  .cart-text {
+    font-size: 13px;
+  }
+
+  .cart-icon {
+    width: 42px;
+  }
+
+  .cart-text {
+    margin-top: 10px;
+  }
+
+  .cart-quantity {
+    top: 3px;
+    left: 18px;
+    width: 22px;
+    font-size: 14px;
+  }
+}
+
+@media (max-width: 420px) {
+  .amazon-header {
+    padding-right: 6px;
+    padding-left: 6px;
+    column-gap: 4px;
+  }
+
+  .amazon-mobile-logo {
+    height: 30px;
+  }
+
+  .returns-text {
+    display: none;
+  }
+
+  .orders-text,
+  .cart-text {
+    font-size: 12px;
+  }
+
+  .cart-icon {
+    width: 38px;
+  }
+
+  .cart-quantity {
+    left: 15px;
+  }
+}
+
+@media (max-width: 340px) {
+  .cart-text {
+    display: none;
+  }
 }

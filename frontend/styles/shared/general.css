@@ -1,11 +1,19 @@
+
 html {
-  background-color: white;
+  min-width: 0;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
 }
 
 body {
+  min-width: 0;
+  overflow-x: hidden;
   font-family: Roboto, Arial;
   color: rgb(33, 33, 33);
-  background-color: white;
   /* The <body> element has a default margin of 8px
      on all sides. This removes the default margins. */
   margin: 0;
@@ -103,4 +111,14 @@ select {
 select:focus,
 input:focus {
   outline: 2px solid rgb(255, 153, 0);
+}
+
+img {
+  max-width: 100%;
+}
+
+input,
+select,
+button {
+  min-width: 0;
 }

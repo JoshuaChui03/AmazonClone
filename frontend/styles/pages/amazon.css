@@ -158,3 +158,28 @@
 .visible{
   opacity: 1;
 }
+
+@media (max-width: 700px) {
+  .main {
+    margin-top: 112px;
+  }
+
+  .product-container {
+    padding: 24px 18px 20px;
+  }
+}
+
+@media (max-width: 520px) {
+  .products-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .product-container {
+    padding: 20px 16px;
+  }
+
+  .product-image-container {
+    height: 160px;
+    margin-bottom: 16px;
+  }
+}

@@ -79,3 +79,35 @@
   border-radius: 50px;
   width: 50%;
 }
+
+
+@media (max-width: 700px) {
+  .main {
+    width: 100%;
+    margin-top: 136px;
+    margin-bottom: 60px;
+    padding-right: 16px;
+    padding-left: 16px;
+  }
+
+  .back-to-orders-link {
+    margin-bottom: 22px;
+  }
+
+  .delivery-date {
+    font-size: 22px;
+  }
+
+  .product-image {
+    max-width: 130px;
+    max-height: 130px;
+    margin-top: 20px;
+    margin-bottom: 35px;
+  }
+}
+
+@media (max-width: 420px) {
+  .progress-bar-container {
+    height: 20px;
+  }
+}

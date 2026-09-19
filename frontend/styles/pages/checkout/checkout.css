@@ -234,3 +234,53 @@
 .is-editing-quantity .update-quantity-link {
   display: none;
 }
+
+@media (max-width: 575px) {
+  .main {
+    width: 100%;
+    margin-top: 88px;
+    margin-bottom: 50px;
+    padding-right: 12px;
+    padding-left: 12px;
+  }
+
+  .page-title {
+    font-size: 20px;
+  }
+
+  .cart-item-container,
+  .payment-summary {
+    padding: 14px;
+  }
+
+  .delivery-date {
+    font-size: 17px;
+    margin-bottom: 16px;
+  }
+
+  .cart-item-details-grid {
+    grid-template-columns: 1fr;
+    row-gap: 16px;
+  }
+
+  .product-image {
+    max-height: 110px;
+    margin-bottom: 4px;
+  }
+
+  .delivery-options {
+    grid-column: auto;
+  }
+
+  .delivery-option {
+    grid-template-columns: 22px minmax(0, 1fr);
+  }
+
+  .payment-summary-row {
+    column-gap: 12px;
+  }
+
+  .quantity-input {
+    width: 42px;
+  }
+}

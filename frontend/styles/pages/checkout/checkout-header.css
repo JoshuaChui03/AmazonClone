@@ -101,3 +101,39 @@
     width: auto;
   }
 }
+
+
+@media (max-width: 575px) {
+  .checkout-header {
+    height: 64px;
+    padding-right: 12px;
+    padding-left: 12px;
+  }
+
+  .header-content {
+    display: grid;
+    grid-template-columns: 40px minmax(0, 1fr) 24px;
+    column-gap: 8px;
+  }
+
+  .checkout-header-left-section,
+  .checkout-header-right-section {
+    width: auto;
+  }
+
+  .checkout-header-middle-section {
+    min-width: 0;
+    margin-right: 0;
+    font-size: 17px;
+    line-height: 1.2;
+  }
+
+  .return-to-home-link {
+    font-size: 16px;
+  }
+
+  .checkout-header-right-section img {
+    width: 20px;
+    height: auto;
+  }
+}
