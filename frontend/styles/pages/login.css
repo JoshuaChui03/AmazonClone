@@ -1,6 +1,6 @@
 .login-page {
   width: 100%;
-  max-width: 360px;
+  max-width: 420px;
   margin: 40px auto;
   padding: 0 20px;
 }
@@ -8,7 +8,18 @@
 .login-logo {
   display: block;
   width: 105px;
-  margin: 0 auto 22px;
+  margin: 0 auto 14px;
+}
+
+.portfolio-badge {
+  width: fit-content;
+  margin: 0 auto 18px;
+  padding: 5px 10px;
+  border: 1px solid rgb(136, 140, 140);
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
 }
 
 .login-card {
@@ -26,6 +37,29 @@
 .demo-note {
   line-height: 1.4;
   color: rgb(86, 89, 89);
+}
+
+.demo-warning {
+  margin-top: 16px;
+  padding: 12px;
+  border: 1px solid rgb(240, 193, 75);
+  border-radius: 6px;
+  background: rgb(255, 249, 230);
+  line-height: 1.4;
+  font-size: 13px;
+}
+
+.demo-warning p {
+  margin-top: 4px;
+}
+
+.demo-credentials {
+  margin-top: 16px;
+  padding: 12px;
+  border-radius: 6px;
+  background: rgb(247, 248, 248);
+  line-height: 1.6;
+  font-size: 13px;
 }
 
 .login-card label {
@@ -63,4 +97,20 @@
   margin-top: 18px;
   text-align: center;
   color: rgb(0, 113, 133);
+}
+
+.portfolio-disclaimer {
+  margin-top: 18px;
+  text-align: center;
+  color: rgb(86, 89, 89);
+  font-size: 12px;
+  line-height: 1.4;
+}
+
+.portfolio-disclaimer {
+  margin-top: 18px;
+  text-align: center;
+  color: rgb(86, 89, 89);
+  font-size: 12px;
+  line-height: 1.4;
 }

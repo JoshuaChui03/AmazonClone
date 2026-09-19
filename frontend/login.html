@@ -15,25 +15,54 @@
         <img class="login-logo" src="images/amazon-logo.png" alt="Amazon">
       </a>
 
+      <div class="portfolio-badge">PORTFOLIO DEMO</div>
+
       <form class="login-card js-login-form">
-        <h1>Sign in</h1>
+        <h1>Demo Account Sign In</h1>
 
         <p class="demo-note">
-          Use the persistent demo account to view saved orders and package-tracking progress.
+          This is an educational e-commerce portfolio project by Joshua Chui and is not affiliated with Amazon.
         </p>
 
-        <label for="username">Username</label>
-        <input id="username" class="login-input js-username" autocomplete="username" required>
+        <div class="demo-warning">
+          <strong>Use demo credentials only.</strong>
+          <p>Do not enter your Amazon account information or any personal credentials on this page.</p>
+        </div>
 
-        <label for="password">Password</label>
-        <input id="password" class="login-input js-password" type="password" autocomplete="current-password" required>
+        <div class="demo-credentials">
+          <div><strong>Demo username:</strong> demo</div>
+          <div><strong>Demo password:</strong> demo</div>
+        </div>
+
+        <label for="username">Demo username</label>
+        <input
+          id="username"
+          class="login-input js-username"
+          value="demo"
+          autocomplete="off"
+          required
+        >
+
+        <label for="password">Demo password</label>
+        <input
+          id="password"
+          class="login-input js-password"
+          type="password"
+          value="demo"
+          autocomplete="off"
+          required
+        >
 
         <div class="login-error js-login-error"></div>
 
-        <button class="login-button button-primary" type="submit">Sign in</button>
+        <button class="login-button button-primary" type="submit">Sign In to Demo</button>
 
         <a class="guest-link js-continue-as-guest" href="amazon.html">Continue as a temporary guest</a>
       </form>
+
+      <p class="portfolio-disclaimer">
+        Independent portfolio project. Not affiliated with or endorsed by Amazon.
+      </p>
     </main>
 
     <script type="module" src="scripts/login.js"></script>
