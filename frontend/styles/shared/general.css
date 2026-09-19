@@ -1,7 +1,9 @@
-
-html {
+html,
+body {
   min-width: 0;
-  background-color: white;
+  min-height: 100%;
+  background-color: rgb(255, 255, 255);
+  color-scheme: light;
 }
 
 *,
@@ -11,13 +13,10 @@ html {
 }
 
 body {
-  min-width: 0;
+  min-height: 100vh;
   overflow-x: hidden;
   font-family: Roboto, Arial;
   color: rgb(33, 33, 33);
-  background-color: white;
-  /* The <body> element has a default margin of 8px
-     on all sides. This removes the default margins. */
   margin: 0;
 }
 
